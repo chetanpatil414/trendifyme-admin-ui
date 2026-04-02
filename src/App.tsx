@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AddProductPage from './pages/AddProductPage';

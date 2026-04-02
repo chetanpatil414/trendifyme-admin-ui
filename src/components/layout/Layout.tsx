@@ -1,10 +1,17 @@
-// src/components/layout/Layout.jsx
+// src/components/layout/Layout.tsx
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { Menu } from 'lucide-react';
 
-export default function Layout({ children, breadcrumbs = [], headerActions }) {
+interface LayoutProps {
+  children: React.ReactNode;
+  breadcrumbs?: string[];
+  headerActions?: React.ReactNode;
+  activeNav?: string;
+}
+
+export default function Layout({ children, breadcrumbs = [], headerActions }: LayoutProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
@@ -27,7 +34,7 @@ export default function Layout({ children, breadcrumbs = [], headerActions }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-surface">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-[#f7f9ff]">
         {/* Mobile Top Bar */}
         <div className="flex lg:hidden items-center gap-3 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-[rgba(160,180,203,0.15)] z-20 sticky top-0">
           <button
@@ -40,7 +47,7 @@ export default function Layout({ children, breadcrumbs = [], headerActions }) {
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden lg:block sticky top-0 z-20 glass-header">
+        <div className="hidden lg:block sticky top-0 z-20">
           <Header breadcrumbs={breadcrumbs} actions={headerActions} />
         </div>
 

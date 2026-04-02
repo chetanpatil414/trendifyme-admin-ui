@@ -1,8 +1,13 @@
-// src/components/layout/Header.jsx
+// src/components/layout/Header.tsx
 import React from 'react';
-import { Search, Bell, Plus, ChevronRight } from 'lucide-react';
+import { Search, Bell, ChevronRight } from 'lucide-react';
 
-export default function Header({ breadcrumbs = [], actions }) {
+interface HeaderProps {
+  breadcrumbs?: string[];
+  actions?: React.ReactNode;
+}
+
+export default function Header({ breadcrumbs = [], actions }: HeaderProps) {
   return (
     <header className="glass sticky top-0 z-20 border-b border-[rgba(160,180,203,0.12)] px-6 py-3.5 flex items-center justify-between gap-4">
       {/* Left: Breadcrumbs */}

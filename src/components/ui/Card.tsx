@@ -1,7 +1,17 @@
-// src/components/ui/Card.jsx
-import React from 'react';
+// src/components/ui/Card.tsx
+import React, { ReactNode, HTMLAttributes, ElementType } from 'react';
 
-export default function Card({ children, className = '', noPad = false, glassHeader = false, ...props }) {
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  noPad?: boolean;
+}
+
+export default function Card({ 
+  children, 
+  className = '', 
+  noPad = false,
+  ...props 
+}: CardProps) {
   return (
     <div
       className={`
@@ -16,7 +26,21 @@ export default function Card({ children, className = '', noPad = false, glassHea
   );
 }
 
-export function CardHeader({ title, subtitle, icon: Icon, action, className = '' }) {
+export interface CardHeaderProps {
+  title: string;
+  subtitle?: string;
+  icon?: ElementType;
+  action?: ReactNode;
+  className?: string;
+}
+
+export function CardHeader({ 
+  title, 
+  subtitle, 
+  icon: Icon, 
+  action, 
+  className = '' 
+}: CardHeaderProps) {
   return (
     <div className={`flex items-start justify-between mb-6 ${className}`}>
       <div className="flex items-center gap-3">
@@ -35,7 +59,11 @@ export function CardHeader({ title, subtitle, icon: Icon, action, className = ''
   );
 }
 
-export function SectionDivider({ label }) {
+export interface SectionDividerProps {
+  label?: string;
+}
+
+export function SectionDivider({ label }: SectionDividerProps) {
   return (
     <div className="flex items-center gap-3 my-6">
       <div className="flex-1 h-px bg-[rgba(160,180,203,0.3)]" />

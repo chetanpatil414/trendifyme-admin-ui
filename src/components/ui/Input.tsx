@@ -1,5 +1,18 @@
-// src/components/ui/Input.jsx
-import React, { useState } from 'react';
+// src/components/ui/Input.tsx
+import React, { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, useState, ElementType } from 'react';
+
+interface BaseInputProps {
+  label?: string;
+  error?: string;
+  hint?: string;
+  icon?: ElementType;
+  prefix?: string;
+  suffix?: string;
+  placeholder?: string;
+  errorMsg?: string;
+}
+
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement>, BaseInputProps {}
 
 export default function Input({
   label,
@@ -14,10 +27,12 @@ export default function Input({
   prefix,
   suffix,
   icon: Icon,
+  errorMsg,
   className = '',
   ...props
-}) {
+}: InputProps) {
   const [focused, setFocused] = useState(false);
+  const errorId = id ? `${id}-error` : undefined;
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -44,15 +59,20 @@ export default function Input({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="flex-1 bg-transparent outline-none text-sm text-[#213447] placeholder:text-[#a0b4cb] min-w-0"
+          aria-invalid={!!errorMsg}
+          aria-describedby={errorMsg ? errorId : undefined}
           {...props}
         />
         {suffix && <span className="text-sm text-[#4e6175] flex-shrink-0">{suffix}</span>}
       </div>
       {error && <p className="text-xs text-[#a83836] flex items-center gap-1">{error}</p>}
-      {hint && !error && <p className="text-xs text-[#4e6175]">{hint}</p>}
+      {errorMsg && <p id={errorId} className="text-xs text-[#a83836] flex items-center gap-1 animate-fade-in">{errorMsg}</p>}
+      {hint && !error && !errorMsg && <p className="text-xs text-[#4e6175]">{hint}</p>}
     </div>
   );
 }
+
+export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement>, BaseInputProps {}
 
 export function Textarea({
   label,
@@ -63,13 +83,15 @@ export function Textarea({
   rows = 3,
   hint,
   error,
+  errorMsg,
   required,
   className = '',
   maxLength,
   ...props
-}) {
+}: TextareaProps) {
   const [focused, setFocused] = useState(false);
-  const len = (value || '').length;
+  const errorId = id ? `${id}-error` : undefined;
+  const len = String(value || '').length;
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -95,6 +117,8 @@ export function Textarea({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="w-full bg-transparent outline-none text-sm text-[#213447] placeholder:text-[#a0b4cb] resize-none leading-relaxed"
+          aria-invalid={!!errorMsg}
+          aria-describedby={errorMsg ? errorId : undefined}
           {...props}
         />
         {maxLength && (
@@ -104,9 +128,19 @@ export function Textarea({
         )}
       </div>
       {error && <p className="text-xs text-[#a83836] flex items-center gap-1">{error}</p>}
-      {hint && !error && <p className="text-xs text-[#4e6175]">{hint}</p>}
+      {errorMsg && <p id={errorId} className="text-xs text-[#a83836] flex items-center gap-1 animate-fade-in">{errorMsg}</p>}
+      {hint && !error && !errorMsg && <p className="text-xs text-[#4e6175]">{hint}</p>}
     </div>
   );
+}
+
+export interface SelectOption {
+  value: string | number;
+  label: string;
+}
+
+export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement>, BaseInputProps {
+  options?: (string | SelectOption)[];
 }
 
 export function Select({
@@ -118,10 +152,13 @@ export function Select({
   placeholder,
   required,
   error,
+  errorMsg,
   hint,
   className = '',
-}) {
+  ...props
+}: SelectProps) {
   const [focused, setFocused] = useState(false);
+  const errorId = id ? `${id}-error` : undefined;
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -144,12 +181,15 @@ export function Select({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="w-full bg-transparent outline-none text-sm text-[#213447] appearance-none cursor-pointer"
+          aria-invalid={!!errorMsg}
+          aria-describedby={errorMsg ? errorId : undefined}
+          {...props}
         >
           {placeholder && <option value="">{placeholder}</option>}
-          {options.map(opt =>
+          {options.map((opt, i) =>
             typeof opt === 'string'
-              ? <option key={opt} value={opt}>{opt}</option>
-              : <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ? <option key={`${opt}-${i}`} value={opt}>{opt}</option>
+              : <option key={`${opt.value}-${i}`} value={opt.value}>{opt.label}</option>
           )}
         </select>
         <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -159,7 +199,8 @@ export function Select({
         </div>
       </div>
       {error && <p className="text-xs text-[#a83836] flex items-center gap-1">{error}</p>}
-      {hint && !error && <p className="text-xs text-[#4e6175]">{hint}</p>}
+      {errorMsg && <p id={errorId} className="text-xs text-[#a83836] flex items-center gap-1 animate-fade-in">{errorMsg}</p>}
+      {hint && !error && !errorMsg && <p className="text-xs text-[#4e6175]">{hint}</p>}
     </div>
   );
 }

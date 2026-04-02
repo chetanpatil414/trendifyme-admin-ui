@@ -1,8 +1,15 @@
-// src/components/ui/Toast.jsx
+// src/components/ui/Toast.tsx
 import React, { useState } from 'react';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
-export default function Toast({ title, message, icon = 'info', onClose }) {
+export interface ToastProps {
+  title?: string;
+  message: string;
+  icon?: 'info' | 'success' | 'error';
+  onClose?: () => void;
+}
+
+export default function Toast({ title, message, icon = 'info', onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) return null;
@@ -12,29 +19,43 @@ export default function Toast({ title, message, icon = 'info', onClose }) {
     onClose?.();
   };
 
+  const Icon = icon === 'success' ? CheckCircle : icon === 'error' ? AlertCircle : Info;
+
   return (
     <div className="fixed bottom-8 right-8 z-50 animate-toast">
-      <div className="flex items-center gap-4 p-4 bg-white/90 backdrop-blur-xl border-l-4 border-primary rounded-xl shadow-2xl max-w-sm">
-        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
-          <span className="material-symbols-outlined">{icon}</span>
+      <div className="flex items-center gap-4 p-4 bg-white/90 backdrop-blur-xl border-l-4 border-[#0058cd] rounded-xl shadow-2xl max-w-sm">
+        <div className="w-10 h-10 bg-[#e3efff] rounded-full flex items-center justify-center text-[#0058cd] shrink-0">
+          <Icon size={20} />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-semibold text-on-surface">{title}</p>
-          <p className="text-xs text-on-surface-variant max-w-[200px]">{message}</p>
+          {title && <p className="text-sm font-semibold text-[#213447]">{title}</p>}
+          <p className="text-xs text-[#4e6175] max-w-[200px]">{message}</p>
         </div>
         <button 
           onClick={handleClose}
-          className="p-1 hover:bg-surface-container rounded-full text-on-surface-variant/40 flex-shrink-0"
+          className="p-1 hover:bg-[#edf4ff] rounded-full text-[#a0b4cb] flex-shrink-0"
           aria-label="Close toast"
         >
-          <span className="material-symbols-outlined text-sm">close</span>
+          <X size={16} />
         </button>
       </div>
     </div>
   );
 }
 
-export function ToastContainer({ toasts, removeToast }) {
+export interface ToastData {
+  id: string;
+  message: string;
+  description?: string;
+  type: 'info' | 'success' | 'error';
+}
+
+export interface ToastContainerProps {
+  toasts: ToastData[];
+  removeToast: (id: string) => void;
+}
+
+export function ToastContainer({ toasts, removeToast }: ToastContainerProps) {
   if (!toasts || toasts.length === 0) return null;
   
   return (
@@ -66,7 +87,11 @@ export function ToastContainer({ toasts, removeToast }) {
               <p className="text-sm font-semibold text-[#213447]">{toast.message}</p>
               {toast.description && <p className="text-xs text-[#4e6175] mt-0.5">{toast.description}</p>}
             </div>
-            <button onClick={() => removeToast(toast.id)} className="text-[#697d92] hover:text-[#213447] p-1">
+            <button 
+              onClick={() => removeToast(toast.id)} 
+              className="text-[#697d92] hover:text-[#213447] p-1"
+              aria-label="Remove notification"
+            >
               <X size={16} />
             </button>
           </div>

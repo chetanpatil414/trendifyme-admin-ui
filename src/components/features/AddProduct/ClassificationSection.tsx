@@ -1,9 +1,20 @@
-// src/components/features/AddProduct/ClassificationSection.jsx
+// src/components/features/AddProduct/ClassificationSection.tsx
 import React from 'react';
 import Card, { CardHeader } from '../../ui/Card';
 import { Select } from '../../ui/Input';
 import Badge from '../../ui/Badge';
 import { Tag, Globe, Shield, Truck } from 'lucide-react';
+import { Product } from '../../../types/product';
+
+interface ClassificationSectionProps {
+  data: Partial<Product> & {
+    visibility?: string;
+    taxClass?: string;
+    shippingClass?: string;
+  };
+  onChange: (data: any) => void;
+  errors?: Record<string, string>;
+}
 
 const statusOptions = [
   { value: 'draft',     label: 'Draft — Not visible to customers' },
@@ -34,18 +45,19 @@ const shippingOptions = [
   { value: 'free',       label: 'Always Free Shipping' },
 ];
 
-const statusBadge = {
+const statusBadge: Record<string, React.ReactNode> = {
   draft:     <Badge variant="neutral" dot>Draft</Badge>,
   active:    <Badge variant="success" dot>Active</Badge>,
   archived:  <Badge variant="warning" dot>Archived</Badge>,
   review:    <Badge variant="purple" dot>In Review</Badge>,
 };
 
-export default function ClassificationSection({ data, onChange }) {
-  const update = (field) => (e) => onChange({ ...data, [field]: e.target.value });
+export default function ClassificationSection({ data, onChange, errors }: ClassificationSectionProps) {
+  const update = (field: string) => (e: React.ChangeEvent<HTMLSelectElement>) => 
+    onChange({ ...data, [field]: e.target.value });
 
   return (
-    <Card className="animate-fade-slide-up delay-400">
+    <Card className="animate-fade-slide-up delay-400" id="section-classification">
       <CardHeader
         icon={Tag}
         title="Classification"
@@ -63,7 +75,7 @@ export default function ClassificationSection({ data, onChange }) {
             id="product-status"
             options={statusOptions}
             placeholder="Choose status..."
-            value={data.status}
+            value={data.status || 'draft'}
             onChange={update('status')}
           />
         </div>
@@ -73,7 +85,7 @@ export default function ClassificationSection({ data, onChange }) {
           id="product-visibility"
           label="Sales Channels"
           options={visibilityOptions}
-          value={data.visibility}
+          value={data.visibility || 'all'}
           onChange={update('visibility')}
           icon={Globe}
         />
@@ -83,17 +95,17 @@ export default function ClassificationSection({ data, onChange }) {
           id="tax-class"
           label="Tax Classification"
           options={taxOptions}
-          value={data.taxClass}
+          value={data.taxClass || 'standard'}
           onChange={update('taxClass')}
           icon={Shield}
         />
 
-        {/* Shipping Class */}
+        {/* Shipping Method */}
         <Select
           id="shipping-class-select"
           label="Shipping Method"
           options={shippingOptions}
-          value={data.shippingClass}
+          value={data.shippingClass || 'standard'}
           onChange={update('shippingClass')}
           icon={Truck}
         />
@@ -109,22 +121,12 @@ export default function ClassificationSection({ data, onChange }) {
                   {statusBadge[data.status]}
                 </div>
               )}
-              {data.visibility && (
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#697d92]">Channel</span>
-                  <span className="text-xs font-medium text-[#213447]">
-                    {visibilityOptions.find(o => o.value === data.visibility)?.label}
-                  </span>
-                </div>
-              )}
-              {data.taxClass && (
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#697d92]">Tax</span>
-                  <span className="text-xs font-medium text-[#213447]">
-                    {taxOptions.find(o => o.value === data.taxClass)?.label}
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[#697d92]">Channel</span>
+                <span className="text-xs font-medium text-[#213447]">
+                  {visibilityOptions.find(o => o.value === (data.visibility || 'all'))?.label}
+                </span>
+              </div>
             </div>
           </div>
         )}

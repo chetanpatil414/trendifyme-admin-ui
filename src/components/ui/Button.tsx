@@ -1,5 +1,5 @@
-// src/components/ui/Button.jsx
-import React from 'react';
+// src/components/ui/Button.tsx
+import React, { ButtonHTMLAttributes, ElementType } from 'react';
 
 const variants = {
   primary: 'btn-primary-gradient text-white font-semibold shadow-sm hover:shadow-md active:scale-[0.98]',
@@ -10,11 +10,20 @@ const variants = {
 };
 
 const sizes = {
-  sm:  'px-3 py-1.5 text-xs rounded-lg',
-  md:  'px-4 py-2.5 text-sm rounded-xl',
-  lg:  'px-6 py-3 text-sm rounded-xl',
-  xl:  'px-8 py-3.5 text-base rounded-xl',
+  sm: 'px-3 py-1.5 text-xs rounded-lg',
+  md: 'px-4 py-2.5 text-sm rounded-xl',
+  lg: 'px-6 py-3 text-sm rounded-xl',
+  xl: 'px-8 py-3.5 text-base rounded-xl',
 };
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: keyof typeof variants;
+  size?: keyof typeof sizes;
+  icon?: ElementType;
+  iconRight?: ElementType;
+  loading?: boolean;
+  fullWidth?: boolean;
+}
 
 export default function Button({
   children,
@@ -22,12 +31,12 @@ export default function Button({
   size = 'md',
   className = '',
   icon: Icon,
-  iconRight,
+  iconRight: IconRight,
   loading = false,
   disabled = false,
   fullWidth = false,
   ...props
-}) {
+}: ButtonProps) {
   return (
     <button
       disabled={disabled || loading}
@@ -48,7 +57,7 @@ export default function Button({
         <Icon size={16} />
       ) : null}
       {children}
-      {iconRight && !loading && <iconRight size={16} />}
+      {IconRight && !loading && <IconRight size={16} />}
     </button>
   );
 }
