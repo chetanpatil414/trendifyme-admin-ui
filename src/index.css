@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design System Tokens (Precision Admin) ─────────────────────── */
+:root {
+  /* Primary Palette */
+  --color-primary: #0058cd;
+  --color-primary-container: #4784fd;
+  --color-primary-dim: #004db5;
+  --color-on-primary: #f9f8ff;
+  --color-on-primary-container: #000000;
+  --color-inverse-primary: #568cff;
+
+  /* Secondary */
+  --color-secondary: #585f72;
+  --color-secondary-container: #dce2f9;
+  --color-on-secondary: #f9f8ff;
+  --color-on-secondary-container: #4b5164;
+
+  /* Tertiary */
+  --color-tertiary: #6b5780;
+  --color-tertiary-container: #e1c8f8;
+  --color-on-tertiary: #fff6ff;
+
+  /* Surface Hierarchy */
+  --color-surface: #f7f9ff;
+  --color-surface-bright: #f7f9ff;
+  --color-surface-dim: #c8dcf4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #edf4ff;
+  --color-surface-container: #e3efff;
+  --color-surface-container-high: #d9eaff;
+  --color-surface-container-highest: #d0e5fd;
+
+  /* On-Surface */
+  --color-on-surface: #213447;
+  --color-on-surface-variant: #4e6175;
+  --color-on-background: #213447;
+  --color-background: #f7f9ff;
+
+  /* Outline */
+  --color-outline: #697d92;
+  --color-outline-variant: #a0b4cb;
+
+  /* Error */
+  --color-error: #a83836;
+  --color-error-container: #fa746f;
+  --color-on-error: #fff7f6;
+
+  /* Inverse */
+  --color-inverse-surface: #060f18;
+  --color-inverse-on-surface: #959eaa;
+}
+
+/* ── Base Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-low);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* ── Animations ─────────────────────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 88, 205, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 88, 205, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 88, 205, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.35s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.animate-toast {
+  animation: toastSlide 0.35s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.animate-spin-custom {
+  animation: spin 0.8s linear infinite;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+/* ── Glass Effect ───────────────────────────────────────────────── */
+.glass, .glass-header {
+  background: rgba(247, 249, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Primary Gradient Button ────────────────────────────────────── */
+.btn-primary-gradient, .primary-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+}
+
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, var(--color-primary-dim), var(--color-primary));
+}
+
+/* ── Card Ambient Shadow ────────────────────────────────────────── */
+.card-shadow {
+  box-shadow: 0 10px 40px -10px rgba(33, 52, 71, 0.06);
+}
+
+.card-shadow-md {
+  box-shadow: 0 4px 20px -4px rgba(33, 52, 71, 0.08);
+}
+
+/* ── Input Focus Ghost Ring ─────────────────────────────────────── */
+.input-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 88, 205, 0.25);
+}
+
+/* ── Upload Area ────────────────────────────────────────────────── */
+.upload-area {
+  border: 2px dashed var(--color-outline-variant);
+  transition: all 0.25s ease;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+  border-color: var(--color-primary);
+  background: rgba(0, 88, 205, 0.03);
+}
+
+/* ── Nav Item ───────────────────────────────────────────────────── */
+.nav-item {
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: var(--color-surface-container);
+}
+
+.nav-item.active {
+  background-color: var(--color-surface-container-high);
+  color: var(--color-primary);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--color-primary);
+}
+
+/* ── Progress Stepper ───────────────────────────────────────────── */
+.stepper-connector {
+  height: 2px;
+  background: var(--color-outline-variant);
+  flex: 1;
+  transition: background 0.4s ease;
+}
+
+.stepper-connector.completed {
+  background: var(--color-primary);
+}
