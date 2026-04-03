@@ -39,6 +39,7 @@ export interface Product {
   slug?: string;
   categoryId: number;
   brand?: string;
+  categoryName?: string;
   tags?: string[];
   status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
   visibility: 'PUBLIC' | 'PRIVATE';
@@ -49,6 +50,7 @@ export interface Product {
   stock?: string;
   variants: Variant[];
   media: Media[];
+  images?: string[];
   // Product level attributes
   attributes: Attribute[];
   createdAt: string;

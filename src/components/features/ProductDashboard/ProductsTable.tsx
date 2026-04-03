@@ -20,6 +20,48 @@ interface ProductsTableProps {
   onRetry: () => void;
 }
 
+const getPriceRange = (variants: any[]) => {
+  if (!variants || variants.length === 0) return '—';
+  
+  const validPrices = variants
+    .map(v => typeof v.price === 'string' ? parseFloat(v.price) : v.price)
+    .filter(p => typeof p === 'number' && !isNaN(p) && p > 0);
+
+  if (validPrices.length === 0) {
+    const hasZero = variants.some(v => v.price === 0 || v.price === '0');
+    return hasZero ? 'Free' : '—';
+  }
+
+  const min = Math.min(...validPrices);
+  const max = Math.max(...validPrices);
+
+  if (min === max) return `₹${min.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+  return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
+};
+
+const getStockStatus = (variants: any[]) => {
+  if (!variants || variants.length === 0) return { label: 'Out of Stock', styles: 'bg-red-50 text-red-700' };
+  
+  const totalStock = variants.reduce((sum, v) => sum + Math.max(0, v.stock ?? 0), 0);
+  
+  if (totalStock === 0) return { label: 'Out of Stock', styles: 'bg-red-50 text-red-700' };
+  if (totalStock <= 10) return { label: 'Low Stock', styles: 'bg-amber-50 text-amber-700' };
+  return { label: 'In Stock', styles: 'bg-emerald-50 text-emerald-700' };
+};
+
+const getVariantSummary = (variants: any[]) => {
+  if (!variants || variants.length === 0) return '—';
+  
+  const sizes = [...new Set(variants.map(v => v.attributes?.size).filter(Boolean))];
+  const colors = [...new Set(variants.map(v => v.attributes?.color).filter(Boolean))];
+
+  const sizePart = sizes.length > 0 ? `Sizes: ${sizes.join(', ')}` : '';
+  const colorPart = colors.length > 0 ? `Colors: ${colors.join(', ')}` : '';
+
+  if (sizePart && colorPart) return `${sizePart} / ${colorPart}`;
+  return sizePart || colorPart || '—';
+};
+
 export default function ProductsTable({ products = [], pagination, loading, error, onPageChange, onRetry }: ProductsTableProps) {
   const { currentPage = 0, totalPages = 1, totalElements = 0, pageSize = 10 } = pagination || {};
   const startObj = totalElements === 0 ? 0 : currentPage * pageSize + 1;
@@ -78,6 +120,7 @@ export default function ProductsTable({ products = [], pagination, loading, erro
             </th>
             <th className="px-6 py-4">Product Details</th>
             <th className="px-6 py-4">Category / Brand</th>
+            <th className="px-6 py-4">Variants</th>
             <th className="px-6 py-4">Pricing</th>
             <th className="px-6 py-4">Stock Status</th>
             <th className="px-6 py-4 text-right">Actions</th>
@@ -97,10 +140,14 @@ export default function ProductsTable({ products = [], pagination, loading, erro
           )}
 
           {!loading && products.map((product) => {
-            const coverImage = (product.media && product.media.length > 0) ? product.media[0].url : 'https://placehold.co/400x400/edf4ff/0058cd?text=No+Image';
+            const coverImage = 
+              (product.media && product.media.length > 0 && product.media[0].url) || 
+              (product.images && product.images.length > 0 && product.images[0]) || 
+              'https://placehold.co/400x400/edf4ff/0058cd?text=No+Image';
             
-            // Simplified status logic for migration
-            const statusConfig = { label: 'In Stock', styles: 'bg-emerald-50 text-emerald-700' };
+            const variantSummary = getVariantSummary(product.variants);
+            const priceRange = getPriceRange(product.variants);
+            const statusConfig = getStockStatus(product.variants);
 
             return (
               <tr key={product.id || Math.random()} className="group hover:bg-[#f8fbff] transition-colors duration-200 bg-white">
@@ -120,13 +167,22 @@ export default function ProductsTable({ products = [], pagination, loading, erro
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#213447] capitalize">ID: {product.categoryId || '—'}</span>
-                    <span className="text-[11px] font-medium text-[#697d92] capitalize mt-0.5">TrendifyMe</span>
+                    <span className="text-sm font-semibold text-[#213447] capitalize truncate max-w-[120px]" title={product.categoryName}>
+                      {product.categoryName || '—'}
+                    </span>
+                    <span className="text-[11px] font-medium text-[#697d92] capitalize mt-0.5 truncate max-w-[120px]" title={product.brand}>
+                      {product.brand || '—'}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="text-xs font-semibold text-[#213447] max-w-[180px] truncate" title={variantSummary}>
+                    {variantSummary}
                   </div>
                 </td>
                 <td className="px-6 py-5">
                   <div className="text-sm flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[#213447]">$0.00</span>
+                    <span className="font-bold text-[#213447]">{priceRange}</span>
                   </div>
                 </td>
                 <td className="px-6 py-5">
