@@ -110,17 +110,17 @@ export default function ProductsTable({ products = [], pagination, loading, erro
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f8fbff] flex-shrink-0 shadow-sm border border-[rgba(160,180,203,0.1)] text-[#0058cd] flex items-center justify-center">
-                       <img className="w-full h-full object-cover" alt={product.title} src={coverImage} />
+                       <img className="w-full h-full object-cover" alt={product.name} src={coverImage} />
                     </div>
                     <div>
-                      <p className="font-bold text-sm text-[#213447] line-clamp-1" title={product.title}>{product.title}</p>
+                      <p className="font-bold text-sm text-[#213447] line-clamp-1" title={product.name}>{product.name}</p>
                       <p className="text-xs text-[#697d92] line-clamp-1 mt-0.5" title={product.description}>{product.description}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-[#213447] capitalize">{product.category || '—'}</span>
+                    <span className="text-sm font-semibold text-[#213447] capitalize">ID: {product.categoryId || '—'}</span>
                     <span className="text-[11px] font-medium text-[#697d92] capitalize mt-0.5">TrendifyMe</span>
                   </div>
                 </td>

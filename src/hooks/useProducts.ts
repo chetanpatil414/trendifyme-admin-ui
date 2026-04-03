@@ -25,19 +25,15 @@ export function useProducts(initialPage = 0, initialSize = 10, initialSort: stri
       setError(null);
       const response = await getProducts({ page, size, sort });
       
-      if (Array.isArray(response)) {
-        setData({ content: response, totalElements: response.length, totalPages: 1, number: 0 });
-      } else if (response && response.content) {
-        setData(response);
-      } else if (response && response.data) {
-        setData({ 
-          content: response.data, 
-          totalElements: response.total || response.data.length, 
-          totalPages: response.totalPages || 1, 
-          number: page 
+      if (response && response.content) {
+        setData({
+          content: response.content,
+          totalElements: response.totalElements,
+          totalPages: Math.ceil(response.totalElements / size),
+          number: page
         });
       } else {
-         setData({ content: [], totalElements: 0, totalPages: 0, number: 0 });
+        setData({ content: [], totalElements: 0, totalPages: 0, number: 0 });
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected networking error occurred');

@@ -4,10 +4,8 @@ export interface Attribute {
 }
 
 export interface Inventory {
-  sku: string;
-  quantity: number;
-  trackQuantity: boolean;
-  lowStockThreshold?: number;
+  availableStock: number;
+  lowStockAlert: number;
 }
 
 export interface Media {
@@ -21,8 +19,12 @@ export interface Media {
 export interface Variant {
   id: string;
   sku: string;
+  barcode?: string;
   price: number;
-  compareAtPrice?: number;
+  comparePrice?: number;
+  costPrice?: number;
+  currency: string;
+  stock: number;
   inventory: Inventory;
   // Variants must support dynamic attributes, which are key-value based
   attributes: Record<string, string>;
@@ -31,10 +33,16 @@ export interface Variant {
 
 export interface Product {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  category: string;
-  status: 'active' | 'draft' | 'archived';
+  shortDescription?: string;
+  slug?: string;
+  categoryId: number;
+  brand?: string;
+  tags?: string[];
+  status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
+  visibility: 'PUBLIC' | 'PRIVATE';
+  isActive: boolean;
   variants: Variant[];
   media: Media[];
   // Product level attributes

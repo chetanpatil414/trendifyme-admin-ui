@@ -14,6 +14,9 @@ import {
   Save, RotateCcw, Eye, CheckCircle2,
   FileText, Layers, Image, DollarSign, Tag
 } from 'lucide-react';
+import { mapToApiPayload } from '../utils/payloadMapper';
+import { createProduct } from '../services/productService';
+import { ExtendedMedia } from '../components/features/AddProduct/MediaUploadSection';
 
 const STEPS = [
   { id: 'basic', label: 'Basic Info', Icon: FileText },
@@ -70,8 +73,8 @@ export default function AddProductPage() {
   // NEW HOOK
   const productState = useProductState();
   const { 
-    product, attributes, variants, validation, isStale,
-    setProduct, addAttribute, removeAttribute, addAttributeValue, 
+    product, attributes, variants, media, validation, isStale,
+    setProduct, setMedia, addAttribute, removeAttribute, addAttributeValue, 
     removeAttributeValue, generateVariants, regenerateAllSkus, 
     updateVariantPrice, updateVariantStock, updateVariantSku, removeVariant 
   } = productState;
@@ -88,18 +91,50 @@ export default function AddProductPage() {
 
   const removeToast = (id: string) => setToasts(prev => prev.filter(t => t.id !== id));
 
+  const validateMedia = (images: ExtendedMedia[]) => {
+    if (images.length === 0) {
+      addToast('At least one product image is required.', 'error');
+      return false;
+    }
+    // MIME Verification
+    const invalidFiles = images.filter(img => img.rawFile && !img.rawFile.type.startsWith('image/'));
+    if (invalidFiles.length > 0) {
+      addToast('Only image files (PNG, JPG, WEBP) are allowed.', 'error');
+      return false;
+    }
+    // Size Verification (10MB max per file - as per UI hint)
+    const oversizedFiles = images.filter(img => img.rawFile && img.rawFile.size > 10 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      addToast('Some images exceed the 10MB limit.', 'error');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
     if (!validation.isValid) {
       addToast('Validation failed. Check variants and SKU uniqueness.', 'error');
       return;
     }
+
+    if (!validateMedia(media)) {
+      return;
+    }
+
     setIsSubmitting(true);
-    // Simulate API
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    try {
+      const payload = mapToApiPayload(product, variants, media);
+      const result = await createProduct(payload);
+      
       addToast('Product Published Successfully!', 'success');
       setTimeout(() => navigate('/products'), 1500);
-    }, 1500);
+    } catch (error: any) {
+      console.error(error);
+      addToast(error.message || 'Failed to publish product. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -109,7 +144,7 @@ export default function AddProductPage() {
   };
 
   // Simplified completion for the migration (can be refined later)
-  const score = Math.min(100, (product.title ? 20 : 0) + (product.category ? 20 : 0) + (variants.length > 0 ? 30 : 0) + 30);
+  const score = (product.name ? 25 : 0) + (product.categoryId ? 25 : 0) + (variants.length > 0 ? 25 : 0) + (media.length > 0 ? 25 : 0);
 
   const headerActions = (
     <div className="flex items-center gap-2">
@@ -166,8 +201,8 @@ export default function AddProductPage() {
             />
 
             <MediaUploadSection 
-              data={{ images: [] }} // Needs hook integration for media
-              onChange={() => {}}
+              data={{ images: media }}
+              onChange={(data) => setMedia(data.images)}
             />
 
             <ValueStockSection 

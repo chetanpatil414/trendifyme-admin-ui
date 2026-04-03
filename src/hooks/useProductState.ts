@@ -5,6 +5,7 @@ import { productInitialState } from '../state/productInitialState';
 import { generateCombinations } from '../utils/generateCombinations';
 import { generateSku } from '../utils/skuGenerator';
 import { validateProductForm } from '../utils/validation';
+import { ExtendedMedia } from '../components/features/AddProduct/MediaUploadSection';
 
 const deepSortKeys = (obj: any): any => {
   if (obj === null || typeof obj !== 'object') return obj;
@@ -26,6 +27,7 @@ export const useProductState = () => {
   const [product, setProduct] = useState<Partial<Product>>(productInitialState.product);
   const [attributes, setAttributes] = useState<AttributeGroupUI[]>(productInitialState.attributes);
   const [variants, setVariants] = useState<VariantRowUI[]>(productInitialState.variants);
+  const [media, setMedia] = useState<ExtendedMedia[]>([]);
   const [lastGeneratedSnapshot, setLastGeneratedSnapshot] = useState<string | null>(null);
 
   const addAttribute = (name: string) => {
@@ -89,9 +91,9 @@ export const useProductState = () => {
     const combinations = generateCombinations(attributes);
     const newVariants: VariantRowUI[] = combinations.map(combo => ({
       id: crypto.randomUUID(),
-      sku: generateSku(product.title || '', combo),
+      sku: generateSku(product.name || '', combo),
       price: 0,
-      inventoryQuantity: 0,
+      inventoryQuantity: 10,
       attributes: combo,
       isSkuEdited: false,
     }));
@@ -106,7 +108,7 @@ export const useProductState = () => {
       
       return {
         ...variant,
-        sku: generateSku(product.title || '', variant.attributes),
+        sku: generateSku(product.name || '', variant.attributes),
       };
     }));
   };
@@ -122,11 +124,13 @@ export const useProductState = () => {
     product,
     attributes,
     variants,
+    media,
     validation,
     isStale,
     setProduct,
     setAttributes,
     setVariants,
+    setMedia,
     addAttribute,
     removeAttribute,
     addAttributeValue,

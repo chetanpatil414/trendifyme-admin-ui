@@ -33,8 +33,8 @@ export default function FiltersBar({ onSortChange }: FiltersBarProps) {
           >
             <option value="id,DESC">Sort: Newest</option>
             <option value="price,ASC">Price: Low to High</option>
-            <option value="price,DESC">Price: High to Low</option>
-            <option value="title,ASC">Name: A to Z</option>
+            <option value="name,ASC">Name: A to Z</option>
+            <option value="name,DESC">Name: Z to A</option>
           </select>
           <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#697d92] text-[20px]">sort</span>
         </div>

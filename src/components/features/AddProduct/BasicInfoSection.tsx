@@ -41,9 +41,9 @@ export default function BasicInfoSection({ data, onChange, errors }: BasicInfoSe
           label="Product Name"
           required
           placeholder="e.g. Premium Wireless Noise-Cancelling Headphones"
-          value={data.title || ''}
-          onChange={update('title')}
-          error={errors?.['title']}
+          value={data.name || ''}
+          onChange={update('name')}
+          error={errors?.['name']}
           hint="Use a clear, descriptive name that customers will search for"
         />
 
@@ -59,6 +59,27 @@ export default function BasicInfoSection({ data, onChange, errors }: BasicInfoSe
           maxLength={2000}
         />
 
+        {/* New Field: Short Description */}
+        <Input
+          id="product-short-description"
+          label="Short Description"
+          placeholder="A briefly summary for search results"
+          value={data.shortDescription || ''}
+          onChange={update('shortDescription')}
+          error={errors?.['shortDescription']}
+        />
+
+        {/* New Field: Slug */}
+        <Input
+          id="product-slug"
+          label="URL Slug"
+          placeholder="e.g. premium-wireless-headphones"
+          value={data.slug || ''}
+          onChange={update('slug')}
+          error={errors?.['slug']}
+          hint="The unique part of the web address for this product"
+        />
+
         {/* Row: Category + Brand */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
@@ -67,9 +88,9 @@ export default function BasicInfoSection({ data, onChange, errors }: BasicInfoSe
             required
             placeholder="Select a category..."
             options={categoryOptions}
-            value={data.category || ''}
-            onChange={update('category')}
-            error={errors?.['category']}
+            value={data.categoryId?.toString() || ''}
+            onChange={(e) => onChange({ ...data, categoryId: parseInt(e.target.value) })}
+            error={errors?.['categoryId']}
           />
           <Select
             id="product-brand"

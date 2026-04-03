@@ -5,11 +5,11 @@ import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 export interface ToastProps {
   title?: string;
   message: string;
-  icon?: 'info' | 'success' | 'error';
+  type?: 'info' | 'success' | 'error';
   onClose?: () => void;
 }
 
-export default function Toast({ title, message, icon = 'info', onClose }: ToastProps) {
+export default function Toast({ title, message, type = 'info', onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) return null;
@@ -19,7 +19,7 @@ export default function Toast({ title, message, icon = 'info', onClose }: ToastP
     onClose?.();
   };
 
-  const Icon = icon === 'success' ? CheckCircle : icon === 'error' ? AlertCircle : Info;
+  const Icon = type === 'success' ? CheckCircle : type === 'error' ? AlertCircle : Info;
 
   return (
     <div className="fixed bottom-8 right-8 z-50 animate-toast">

@@ -9,10 +9,12 @@ export interface ProductState {
 
 export const productInitialState: ProductState = {
   product: {
-    title: '',
+    name: '',
     description: '',
-    category: '',
-    status: 'draft',
+    categoryId: 0,
+    status: 'DRAFT',
+    visibility: 'PUBLIC',
+    isActive: true,
   },
   attributes: [],
   variants: [],
