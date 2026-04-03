@@ -68,6 +68,7 @@ export const mapToApiPayload = (
       visibility: product.visibility || 'PUBLIC',
       isActive: product.isActive ?? true,
       tags: product.tags || [],
+      skuSuffix: product.skuSuffix || null,
     },
     media: {
       images: mappedMedia ? [mappedMedia] : []

@@ -47,45 +47,43 @@ export default function ValueStockSection({ data, onChange, errors, hasVariants 
       <CardHeader
         icon={DollarSign}
         title="Value & Stock"
-        subtitle={hasVariants ? "Global product level settings and defaults" : "Set pricing, discount strategies, and inventory levels"}
+        subtitle={hasVariants ? "Global defaults used for variant generation" : "Set pricing, discount strategies, and inventory levels"}
       />
 
       <div className="space-y-4">
-        {!hasVariants && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Select
-              id="currency"
-              label="Currency"
-              options={currencyOptions}
-              value={data.currency || 'USD'}
-              onChange={update('currency')}
-            />
-            <Input
-              id="sale-price"
-              label="Base Price"
-              required
-              type="number"
-              placeholder="0.00"
-              prefix={data.currency === 'EUR' ? '€' : data.currency === 'GBP' ? '£' : data.currency === 'INR' ? '₹' : '$'}
-              value={data.price || ''}
-              onChange={update('price')}
-              error={errors?.['price']}
-            />
-            <Input
-              id="compare-price"
-              label="Compare Price"
-              type="number"
-              placeholder="0.00"
-              prefix={data.currency === 'EUR' ? '€' : data.currency === 'GBP' ? '£' : data.currency === 'INR' ? '₹' : '$'}
-              value={data.comparePrice || ''}
-              onChange={update('comparePrice')}
-              error={errors?.['comparePrice']}
-              hint="Must be higher"
-            />
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Select
+            id="currency"
+            label="Currency"
+            options={currencyOptions}
+            value={data.currency || 'USD'}
+            onChange={update('currency')}
+          />
+          <Input
+            id="sale-price"
+            label="Base Price"
+            required
+            type="number"
+            placeholder="0.00"
+            prefix={data.currency === 'EUR' ? '€' : data.currency === 'GBP' ? '£' : data.currency === 'INR' ? '₹' : '$'}
+            value={data.price || ''}
+            onChange={update('price')}
+            error={errors?.['price']}
+          />
+          <Input
+            id="compare-price"
+            label="Compare Price"
+            type="number"
+            placeholder="0.00"
+            prefix={data.currency === 'EUR' ? '€' : data.currency === 'GBP' ? '£' : data.currency === 'INR' ? '₹' : '$'}
+            value={data.comparePrice || ''}
+            onChange={update('comparePrice')}
+            error={errors?.['comparePrice']}
+            hint="Must be higher"
+          />
+        </div>
 
-        {discount !== null && discount > 0 && !hasVariants && (
+        {discount !== null && discount > 0 && (
           <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#d4f0e0]">
             <TrendingDown size={16} className="text-[#1a6b42]" />
             <p className="text-sm font-semibold text-[#1a6b42]">
@@ -105,19 +103,17 @@ export default function ValueStockSection({ data, onChange, errors, hasVariants 
             onChange={update('costPrice')}
             hint="For margin calculation"
           />
-          {!hasVariants && (
-            <Input
-              id="stock-qty"
-              label="Initial Stock"
-              required
-              type="number"
-              placeholder="0"
-              value={data.stock || ''}
-              onChange={update('stock')}
-              error={errors?.['stock']}
-              suffix="units"
-            />
-          )}
+          <Input
+            id="stock-qty"
+            label="Initial Stock"
+            required
+            type="number"
+            placeholder="0"
+            value={data.stock || ''}
+            onChange={update('stock')}
+            error={errors?.['stock']}
+            suffix="units"
+          />
         </div>
       </div>
 

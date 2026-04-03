@@ -3,7 +3,8 @@ import { Product } from '../types/product';
 import { AttributeGroupUI, VariantRowUI } from '../types/ui';
 import { productInitialState } from '../state/productInitialState';
 import { generateCombinations } from '../utils/generateCombinations';
-import { generateSku } from '../utils/skuGenerator';
+import { generateSku, generate7DigitId } from '../utils/skuGenerator';
+import { CATEGORY_OPTIONS } from '../constants/categories';
 import { validateProductForm } from '../utils/validation';
 import { ExtendedMedia } from '../components/features/AddProduct/MediaUploadSection';
 
@@ -89,26 +90,52 @@ export const useProductState = () => {
 
   const generateVariants = () => {
     const combinations = generateCombinations(attributes);
-    const newVariants: VariantRowUI[] = combinations.map(combo => ({
-      id: crypto.randomUUID(),
-      sku: generateSku(product.name || '', combo),
-      price: 0,
-      inventoryQuantity: 10,
-      attributes: combo,
-      isSkuEdited: false,
-    }));
+    const categoryName = CATEGORY_OPTIONS.find(c => c.value === product.categoryId?.toString())?.label || 'PROD';
+    
+    // 1. Ensure we have a product-level suffix (generate once)
+    const currentSuffix = product.skuSuffix || generate7DigitId();
+    if (!product.skuSuffix) {
+      setProduct(prev => ({ ...prev, skuSuffix: currentSuffix }));
+    }
+
+    // 2. Generate all variants using the same suffix and base defaults
+    const basePrice = parseFloat(product.price || '0');
+    const baseComparePrice = parseFloat(product.comparePrice || '0');
+    const baseStock = parseInt(product.stock || '0');
+
+    const newVariants: VariantRowUI[] = combinations.map(combo => {
+      return {
+        id: crypto.randomUUID(),
+        uniqueId: currentSuffix,
+        sku: generateSku(categoryName, combo, currentSuffix),
+        price: basePrice,
+        comparePrice: baseComparePrice > 0 ? baseComparePrice : undefined,
+        inventoryQuantity: baseStock,
+        attributes: combo,
+        isSkuEdited: false,
+      };
+    });
     setVariants(newVariants);
     setLastGeneratedSnapshot(getStableSnapshot(attributes));
   };
 
   const regenerateAllSkus = () => {
+    const categoryName = CATEGORY_OPTIONS.find(c => c.value === product.categoryId?.toString())?.label || 'PROD';
+    const currentSuffix = product.skuSuffix || generate7DigitId();
+    
+    // If we didn't have a suffix, save it now
+    if (!product.skuSuffix) {
+      setProduct(prev => ({ ...prev, skuSuffix: currentSuffix }));
+    }
+
     setVariants(prev => prev.map(variant => {
-      // If manually edited, skip regeneration unless we want a forced overwrite (not specified, so we skip)
+      // If manually edited, skip regeneration
       if (variant.isSkuEdited) return variant;
       
       return {
         ...variant,
-        sku: generateSku(product.name || '', variant.attributes),
+        uniqueId: currentSuffix,
+        sku: generateSku(categoryName, variant.attributes, currentSuffix),
       };
     }));
   };

@@ -11,11 +11,7 @@ interface BasicInfoSectionProps {
   errors?: Record<string, string>;
 }
 
-const categoryOptions = [
-  { value: '1', label: 'T-Shirt' },
-  { value: '2', label: 'Shirt' },
-  { value: '3', label: 'Bottoms' }
-];
+import { CATEGORY_OPTIONS } from '../../../constants/categories';
 
 const brandOptions = [
   { value: 'trendifyMe', label: 'TrendifyMe' },
@@ -87,7 +83,7 @@ export default function BasicInfoSection({ data, onChange, errors }: BasicInfoSe
             label="Category"
             required
             placeholder="Select a category..."
-            options={categoryOptions}
+            options={CATEGORY_OPTIONS}
             value={data.categoryId?.toString() || ''}
             onChange={(e) => onChange({ ...data, categoryId: parseInt(e.target.value) })}
             error={errors?.['categoryId']}

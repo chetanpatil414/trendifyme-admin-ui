@@ -43,6 +43,10 @@ export interface Product {
   status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
   visibility: 'PUBLIC' | 'PRIVATE';
   isActive: boolean;
+  skuSuffix?: string | null;
+  price?: string;
+  comparePrice?: string;
+  stock?: string;
   variants: Variant[];
   media: Media[];
   // Product level attributes

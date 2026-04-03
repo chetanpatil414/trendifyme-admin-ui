@@ -9,6 +9,7 @@ export interface AttributeGroupUI {
 export interface VariantRowUI {
   id: string;
   sku: string;
+  uniqueId?: string;
   isSkuEdited?: boolean;
   price: number;
   inventoryQuantity: number;

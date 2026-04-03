@@ -143,6 +143,26 @@ export default function AddProductPage() {
     }
   };
 
+  const handleGenerateVariants = () => {
+    if (product.skuSuffix) {
+      const confirmed = window.confirm(
+        "This product already has a unique identifier suffix. Regenerating variants will update all non-customized SKUs to match current attributes. Manual edits will be preserved. Continue?"
+      );
+      if (!confirmed) return;
+    }
+    generateVariants();
+  };
+
+  const handleRegenerateSkus = () => {
+    if (product.skuSuffix) {
+      const confirmed = window.confirm(
+        "Regenerate all system-generated SKUs? This ensures they match current category and name while keeping the unique group ID. Manual edits will be preserved."
+      );
+      if (!confirmed) return;
+    }
+    regenerateAllSkus();
+  };
+
   // Simplified completion for the migration (can be refined later)
   const score = (product.name ? 25 : 0) + (product.categoryId ? 25 : 0) + (variants.length > 0 ? 25 : 0) + (media.length > 0 ? 25 : 0);
 
@@ -192,8 +212,8 @@ export default function AddProductPage() {
               removeAttribute={removeAttribute}
               addAttributeValue={addAttributeValue}
               removeValue={removeAttributeValue}
-              generateVariants={generateVariants}
-              regenerateSkus={regenerateAllSkus}
+              generateVariants={handleGenerateVariants}
+              regenerateSkus={handleRegenerateSkus}
               updatePrice={updateVariantPrice}
               updateStock={updateVariantStock}
               updateSku={updateVariantSku}
