@@ -49,17 +49,40 @@ const getStockStatus = (variants: any[]) => {
   return { label: 'In Stock', styles: 'bg-emerald-50 text-emerald-700' };
 };
 
-const getVariantSummary = (variants: any[]) => {
-  if (!variants || variants.length === 0) return '—';
+const COLOR_MAP: Record<string, string> = {
+  'slate': '#334155',
+  'gray': '#374151',
+  'zinc': '#3f3f46',
+  'neutral': '#404040',
+  'stone': '#44403c',
+  'red': '#b91c1c',
+  'orange': '#c2410c',
+  'amber': '#b45309',
+  'yellow': '#a16207',
+  'lime': '#4d7c0f',
+  'green': '#15803d',
+  'emerald': '#047857',
+  'teal': '#0f766e',
+  'cyan': '#0e7490',
+  'sky': '#0369a1',
+  'blue': '#1d4ed8',
+  'indigo': '#4338ca',
+  'violet': '#6d28d9',
+  'purple': '#7e22ce',
+  'fuchsia': '#a21caf',
+  'pink': '#be185d',
+  'rose': '#be123c',
+  'black': '#000000',
+  'white': '#ffffff',
+};
+
+const getVariantDisplayData = (variants: any[]) => {
+  if (!variants || variants.length === 0) return { sizes: [], colors: [] };
   
-  const sizes = [...new Set(variants.map(v => v.attributes?.size).filter(Boolean))];
+  const sizes = [...new Set(variants.map(v => v.attributes?.size).filter(Boolean))].sort();
   const colors = [...new Set(variants.map(v => v.attributes?.color).filter(Boolean))];
 
-  const sizePart = sizes.length > 0 ? `Sizes: ${sizes.join(', ')}` : '';
-  const colorPart = colors.length > 0 ? `Colors: ${colors.join(', ')}` : '';
-
-  if (sizePart && colorPart) return `${sizePart} / ${colorPart}`;
-  return sizePart || colorPart || '—';
+  return { sizes, colors };
 };
 
 export default function ProductsTable({ products = [], pagination, loading, error, onPageChange, onRetry }: ProductsTableProps) {
@@ -145,7 +168,7 @@ export default function ProductsTable({ products = [], pagination, loading, erro
               (product.images && product.images.length > 0 && product.images[0]) || 
               'https://placehold.co/400x400/edf4ff/0058cd?text=No+Image';
             
-            const variantSummary = getVariantSummary(product.variants);
+            const { sizes, colors } = getVariantDisplayData(product.variants);
             const priceRange = getPriceRange(product.variants);
             const statusConfig = getStockStatus(product.variants);
 
@@ -176,8 +199,38 @@ export default function ProductsTable({ products = [], pagination, loading, erro
                   </div>
                 </td>
                 <td className="px-6 py-5">
-                  <div className="text-xs font-semibold text-[#213447] max-w-[180px] truncate" title={variantSummary}>
-                    {variantSummary}
+                  <div className="flex flex-col gap-2">
+                    {sizes.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {sizes.map((size: any) => (
+                          <span 
+                            key={size} 
+                            className="px-1.5 py-0.5 rounded bg-[#e3efff] text-[10px] text-[#213447] font-bold border border-[rgba(0,88,205,0.05)]"
+                          >
+                            {size}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[#697d92]">No variants</span>
+                    )}
+                    
+                    {colors.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {colors.map((color: any) => {
+                          const lowerColor = String(color).toLowerCase();
+                          const hex = COLOR_MAP[lowerColor] || lowerColor;
+                          return (
+                            <div 
+                              key={color} 
+                              className="w-3 h-3 rounded-full shadow-sm border border-black/5" 
+                              style={{ backgroundColor: hex }}
+                              title={String(color)}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-5">
