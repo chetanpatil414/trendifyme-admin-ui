@@ -1,7 +1,7 @@
 // src/services/productService.js
 
 // ** DEAR DEVELOPER: Replace this URL with your actual backend API endpoint **
-const ADMIN_API_URL = 'http://localhost:8080/api/admin';
+const ADMIN_API_URL = 'https://trendifyme-backend-service-0-0-2.onrender.com/api/admin';
 const USER_API_URL = 'http://localhost:8080/api/products';
 
 /**
@@ -116,7 +116,7 @@ export async function getProducts({ page = 0, size = 10, sort = [] } = {}) {
       params.append('sort', sort);
     }
 
-    const response = await fetch(`${'http://localhost:8080/api/products'}?${params.toString()}`, {
+    const response = await fetch(`${'https://trendifyme-backend-service-0-0-2.onrender.com/api/products'}?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',

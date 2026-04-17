@@ -32,7 +32,7 @@ export default function BasicInfoSection({ data, onChange, errors }) {
           id="product-name"
           label="Product Name"
           required
-          placeholder="e.g. Premium Wireless Noise-Cancelling Headphones"
+          placeholder="e.g. Premium clothes"
           value={data.name}
           onChange={update('name')}
           error={errors?.['basic.name']}
@@ -114,7 +114,7 @@ export default function BasicInfoSection({ data, onChange, errors }) {
           <Input
             id="product-tags"
             label="Tags"
-            placeholder="wireless, headphones, audio, premium (comma separated)"
+            placeholder="Enter tags separated by commas"
             value={data.tags}
             onChange={update('tags')}
             error={errors?.['basic.tags']}
