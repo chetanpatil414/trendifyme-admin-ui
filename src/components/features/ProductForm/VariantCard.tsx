@@ -40,7 +40,7 @@ export default function VariantCard({
             return val ? (
               <Badge key={attr.id} variant="neutral" size="sm">
                 <span className="opacity-60 mr-1">{attr.name}:</span>
-                <span className="font-bold">{val}</span>
+                <span className="font-bold">{val.displayValue}</span>
               </Badge>
             ) : null;
           })}

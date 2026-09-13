@@ -31,31 +31,37 @@ export const useProductState = () => {
   const [media, setMedia] = useState<ExtendedMedia[]>([]);
   const [lastGeneratedSnapshot, setLastGeneratedSnapshot] = useState<string | null>(null);
 
-  const addAttribute = (name: string) => {
-    setAttributes(prev => [...prev, { id: crypto.randomUUID(), name, values: [] }]);
+  const addAttribute = (attributeId: number, name: string, displayName: string) => {
+    setAttributes(prev => {
+      if (prev.some(a => a.attributeId === attributeId)) return prev;
+      return [...prev, { id: crypto.randomUUID(), attributeId, name, displayName, values: [] }];
+    });
     // Structural change: clear variants
     setVariants([]);
   };
 
-  const removeAttribute = (name: string) => {
-    setAttributes(prev => prev.filter(attr => attr.name !== name));
+  const removeAttribute = (attributeId: number) => {
+    setAttributes(prev => prev.filter(attr => attr.attributeId !== attributeId));
     setVariants([]);
   };
 
-  const addAttributeValue = (attributeName: string, value: string) => {
+  const addAttributeValue = (attributeId: number, optionId: number, value: string, displayValue: string) => {
     setAttributes(prev => prev.map(attr => 
-      attr.name === attributeName 
-        ? { ...attr, values: [...new Set([...attr.values, value])] }
+      attr.attributeId === attributeId 
+        ? { 
+            ...attr, 
+            values: attr.values.some(v => v.optionId === optionId)
+              ? attr.values
+              : [...attr.values, { optionId, value, displayValue }] 
+          }
         : attr
     ));
-    // Note: Adding a value doesn't automatically clear variants, but they become stale.
-    // User must click "Generate" to refresh.
   };
 
-  const removeAttributeValue = (attributeName: string, value: string) => {
+  const removeAttributeValue = (attributeId: number, optionId: number) => {
     setAttributes(prev => prev.map(attr => 
-      attr.name === attributeName 
-        ? { ...attr, values: attr.values.filter(v => v !== value) } 
+      attr.attributeId === attributeId 
+        ? { ...attr, values: attr.values.filter(v => v.optionId !== optionId) } 
         : attr
     ));
     // Structural change: clear variants if removed value affects them

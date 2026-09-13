@@ -92,7 +92,7 @@ export default function VariantTable({
                   {attributes.map(attr => (
                     <td key={attr.id} className="px-6 py-4">
                       <span className="text-sm font-medium text-[#213447]">
-                        {variant.attributes[attr.name.toLowerCase()] || '-'}
+                        {variant.attributes[attr.name.toLowerCase()]?.displayValue || '-'}
                       </span>
                     </td>
                   ))}

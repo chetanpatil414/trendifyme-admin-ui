@@ -48,7 +48,10 @@ export const mapToApiPayload = (
     comparePrice: v.price * 1.2, // Mocking for sample
     stock: v.inventoryQuantity,
     currency: 'INR',
-    attributes: v.attributes,
+    attributes: Object.values(v.attributes).map(attr => ({
+      attributeId: attr.attributeId,
+      optionId: attr.optionId
+    })),
     inventory: {
       availableStock: v.inventoryQuantity,
       lowStockAlert: 5

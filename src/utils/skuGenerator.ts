@@ -32,9 +32,11 @@ export const generate7DigitId = (): string => {
  * @param attributes - Record of variant attributes (e.g. { Color: 'Red', Size: 'M' })
  * @param uniqueId - A pre-generated 7-digit ID unique to this variant
  */
+import { VariantAttributeCombo } from './generateCombinations';
+
 export const generateSku = (
   categoryName: string, 
-  attributes: Record<string, string>,
+  attributes: Record<string, VariantAttributeCombo>,
   uniqueId: string
 ): string => {
   const categoryPart = normalize(categoryName || 'PROD');
@@ -44,8 +46,8 @@ export const generateSku = (
   const colorKey = Object.keys(attributes).find(k => k.toLowerCase() === 'color');
   const sizeKey = Object.keys(attributes).find(k => k.toLowerCase() === 'size');
 
-  const colorPart = colorKey ? normalize(attributes[colorKey]) : '';
-  const sizePart = sizeKey ? normalize(attributes[sizeKey]) : 'NA';
+  const colorPart = colorKey ? normalize(attributes[colorKey].displayValue) : '';
+  const sizePart = sizeKey ? normalize(attributes[sizeKey].displayValue) : 'NA';
 
   // Assembly: [CATEGORY]-[COLOR?]-[SIZE]-[ID]
   return [categoryPart, colorPart, sizePart, uniqueId]

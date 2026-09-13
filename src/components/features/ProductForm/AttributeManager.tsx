@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, AlertCircle, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import Button from '../../ui/Button';
-import Input from '../../ui/Input';
 import Badge from '../../ui/Badge';
 import Card, { CardHeader } from '../../ui/Card';
-import { AttributeGroupUI } from '../../../types/ui';
+import { AttributeGroupUI, AttributeValueUI } from '../../../types/ui';
+import { fetchAttributes } from '../../../services/attributeService';
+import { AttributeApi, AttributeOptionApi } from '../../../types/attribute';
 
 interface AttributeManagerProps {
   attributes: AttributeGroupUI[];
   variantsCount: number;
-  activeAttributeNames: string[]; // Names of attributes currently reflected in generated variants
-  onAddAttribute: (name: string) => void;
-  onRemoveAttribute: (name: string) => void;
-  onAddValue: (groupName: string, value: string) => void;
-  onRemoveValue: (groupName: string, value: string) => void;
+  activeAttributeNames: string[];
+  onAddAttribute: (attributeId: number, name: string, displayName: string) => void;
+  onRemoveAttribute: (attributeId: number) => void;
+  onAddValue: (attributeId: number, optionId: number, value: string, displayValue: string) => void;
+  onRemoveValue: (attributeId: number, optionId: number) => void;
   isStale?: boolean;
   onGenerate?: () => void;
 }
@@ -29,30 +30,38 @@ export default function AttributeManager({
   isStale = false,
   onGenerate,
 }: AttributeManagerProps) {
-  const [newGroupName, setNewGroupName] = useState('');
-  const [groupError, setGroupError] = useState('');
-  const [newValueInputs, setNewValueInputs] = useState<Record<string, string>>({});
+  const [globalAttributes, setGlobalAttributes] = useState<AttributeApi[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedAttributeId, setSelectedAttributeId] = useState<string>('');
+
+  useEffect(() => {
+    loadGlobalAttributes();
+  }, []);
+
+  const loadGlobalAttributes = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchAttributes();
+      setGlobalAttributes(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddGroup = () => {
-    const trimmedName = newGroupName.trim();
-    if (!trimmedName) return;
+    if (!selectedAttributeId) return;
+    const attr = globalAttributes.find(a => a.id.toString() === selectedAttributeId);
+    if (!attr) return;
 
-    if (attributes.some(attr => attr.name.toLowerCase() === trimmedName.toLowerCase())) {
-      setGroupError('An attribute group with this name already exists.');
+    if (attributes.some(a => a.attributeId === attr.id)) {
+      alert('Attribute already added');
       return;
     }
 
-    onAddAttribute(trimmedName);
-    setNewGroupName('');
-    setGroupError('');
-  };
-
-  const handleAddValue = (groupName: string) => {
-    const val = newValueInputs[groupName]?.trim();
-    if (!val) return;
-    
-    onAddValue(groupName, val);
-    setNewValueInputs(prev => ({ ...prev, [groupName]: '' }));
+    onAddAttribute(attr.id, attr.name, attr.displayName);
+    setSelectedAttributeId('');
   };
 
   return (
@@ -60,7 +69,7 @@ export default function AttributeManager({
       <Card>
         <CardHeader 
           title="Product Attributes" 
-          subtitle="Define attributes like Size, Color, or Material to generate variants."
+          subtitle="Select global attributes (e.g., Size, Color) and assign options for variants."
           icon={Info}
         />
         
@@ -87,38 +96,57 @@ export default function AttributeManager({
         )}
         
         <div className="flex items-end gap-3 mb-8">
-          <Input
-            label="New Attribute Group"
-            placeholder="e.g. Size, Color"
-            value={newGroupName}
-            onChange={(e) => {
-              setNewGroupName(e.target.value);
-              if (groupError) setGroupError('');
-            }}
-            error={groupError}
-            className="flex-1"
-            onKeyDown={(e) => e.key === 'Enter' && handleAddGroup()}
-          />
+          <div className="flex-1 space-y-1">
+            <label className="text-sm font-medium text-[#213447]">Select Attribute Group</label>
+            <div className="flex items-center gap-2">
+              <select
+                className="flex-1 h-10 rounded-xl border border-[rgba(160,180,203,0.3)] bg-white px-3 py-2 text-sm text-[#213447] focus:border-[#0058cd] focus:ring-1 focus:ring-[#0058cd] transition-all outline-none"
+                value={selectedAttributeId}
+                onChange={e => setSelectedAttributeId(e.target.value)}
+                disabled={loading}
+              >
+                <option value="">-- Choose an attribute --</option>
+                {globalAttributes
+                  .filter(a => !attributes.some(selected => selected.attributeId === a.id))
+                  .map(a => (
+                    <option key={a.id} value={a.id}>{a.displayName}</option>
+                  ))
+                }
+              </select>
+              <button 
+                onClick={loadGlobalAttributes} 
+                title="Refresh global attributes"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#f8fbff] text-[#0058cd] hover:bg-[#edf4ff]"
+              >
+                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          </div>
+          
           <Button 
             onClick={handleAddGroup} 
             icon={Plus}
-            disabled={!newGroupName.trim()}
+            disabled={!selectedAttributeId || loading}
           >
             Add Group
           </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {attributes.map((group) => (
-            <AttributeGroupCard
-              key={group.id}
-              group={group}
-              isActive={activeAttributeNames.includes(group.name.toLowerCase())}
-              onRemove={() => onRemoveAttribute(group.name)}
-              onAddValue={onAddValue}
-              onRemoveValue={onRemoveValue}
-            />
-          ))}
+          {attributes.map((group) => {
+            const globalAttr = globalAttributes.find(a => a.id === group.attributeId);
+            return (
+              <AttributeGroupCard
+                key={group.id}
+                group={group}
+                globalOptions={globalAttr?.options || []}
+                isActive={activeAttributeNames.includes(group.name.toLowerCase())}
+                onRemove={() => group.attributeId && onRemoveAttribute(group.attributeId)}
+                onAddValue={(optionId, val, dval) => group.attributeId && onAddValue(group.attributeId, optionId, val, dval)}
+                onRemoveValue={(optionId) => group.attributeId && onRemoveValue(group.attributeId, optionId)}
+              />
+            );
+          })}
         </div>
 
         {attributes.length === 0 && (
@@ -133,32 +161,36 @@ export default function AttributeManager({
 
 interface GroupCardProps {
   group: AttributeGroupUI;
+  globalOptions: AttributeOptionApi[];
   isActive: boolean;
   onRemove: () => void;
-  onAddValue: (name: string, val: string) => void;
-  onRemoveValue: (name: string, val: string) => void;
+  onAddValue: (optionId: number, value: string, displayValue: string) => void;
+  onRemoveValue: (optionId: number) => void;
 }
 
-function AttributeGroupCard({ group, isActive, onRemove, onAddValue, onRemoveValue }: GroupCardProps) {
-  const [newValue, setNewValue] = useState('');
+function AttributeGroupCard({ group, globalOptions, isActive, onRemove, onAddValue, onRemoveValue }: GroupCardProps) {
+  const [selectedOptionId, setSelectedOptionId] = useState<string>('');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleAddValue = () => {
-    if (!newValue.trim()) return;
-    onAddValue(group.name, newValue.trim());
-    setNewValue('');
+    if (!selectedOptionId) return;
+    const option = globalOptions.find(o => o.id.toString() === selectedOptionId);
+    if (!option) return;
+
+    onAddValue(option.id, option.value, option.displayValue);
+    setSelectedOptionId('');
   };
 
   return (
     <div className="p-4 rounded-xl border border-[#edf4ff] bg-[#f7f9ff] flex flex-col gap-4 relative overflow-hidden group">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-[#213447]">{group.name}</h4>
+        <h4 className="text-sm font-semibold text-[#213447]">{group.displayName}</h4>
         
         {!isConfirmingDelete ? (
           <button 
             onClick={() => isActive ? setIsConfirmingDelete(true) : onRemove()}
             className="text-[#a0b4cb] hover:text-[#a83836] p-1 transition-colors"
-            aria-label={`Delete ${group.name} group`}
+            aria-label={`Delete ${group.displayName} group`}
           >
             <Trash2 size={16} />
           </button>
@@ -181,32 +213,37 @@ function AttributeGroupCard({ group, isActive, onRemove, onAddValue, onRemoveVal
       )}
 
       <div className="flex flex-wrap gap-2">
-        {group.values.map((val) => (
+        {group.values.map((val: AttributeValueUI) => (
           <Badge 
-            key={val} 
+            key={val.optionId} 
             variant="purple" 
-            onRemove={() => onRemoveValue(group.name, val)}
-            ariaLabel={`Remove ${val} from ${group.name}`}
+            onRemove={() => onRemoveValue(val.optionId)}
+            ariaLabel={`Remove ${val.displayValue} from ${group.displayName}`}
           >
-            {val}
+            {val.displayValue}
           </Badge>
         ))}
       </div>
 
       <div className="flex gap-2">
-        <Input
-          placeholder="Add value..."
-          value={newValue}
-          onChange={(e) => setNewValue(e.target.value)}
-          className="flex-1"
-          size={undefined} // Input atom doesn't have size but is styled via className
-          onKeyDown={(e) => e.key === 'Enter' && handleAddValue()}
-        />
+        <select
+          className="flex-1 h-9 rounded-md border border-[rgba(160,180,203,0.3)] bg-white px-3 py-1 text-sm text-[#213447] focus:border-[#0058cd] focus:ring-1 focus:ring-[#0058cd] outline-none"
+          value={selectedOptionId}
+          onChange={e => setSelectedOptionId(e.target.value)}
+        >
+          <option value="">Select option...</option>
+          {globalOptions
+            .filter(o => !group.values.some((v: AttributeValueUI) => v.optionId === o.id))
+            .map(o => (
+              <option key={o.id} value={o.id}>{o.displayValue}</option>
+            ))
+          }
+        </select>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={handleAddValue}
-          disabled={!newValue.trim()}
+          disabled={!selectedOptionId}
         >
           Add
         </Button>

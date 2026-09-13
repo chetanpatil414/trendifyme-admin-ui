@@ -16,6 +16,7 @@ interface SidebarItem {
 const navItems: SidebarItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', path: '/' },
   { id: 'products', label: 'Products', icon: 'inventory_2', path: '/products', badge: '142' },
+  { id: 'attributes', label: 'Attributes', icon: 'list_alt', path: '/attributes' },
   { id: 'orders', label: 'Orders', icon: 'shopping_cart', path: '/orders', badge: '8', badgeVariant: 'primary' },
   { id: 'customers', label: 'Customers', icon: 'group', path: '/customers' },
   { id: 'analytics', label: 'Analytics', icon: 'insert_chart', path: '/analytics' },

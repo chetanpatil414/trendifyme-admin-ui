@@ -17,10 +17,10 @@ interface VariantsSectionProps {
   material: string;
   onUpdateMaterial: (val: string) => void;
   // Handlers from useProductState
-  addAttribute: (name: string) => void;
-  removeAttribute: (name: string) => void;
-  addAttributeValue: (group: string, val: string) => void;
-  removeValue: (group: string, val: string) => void;
+  addAttribute: (attributeId: number, name: string, displayName: string) => void;
+  removeAttribute: (attributeId: number) => void;
+  addAttributeValue: (attributeId: number, optionId: number, value: string, displayValue: string) => void;
+  removeValue: (attributeId: number, optionId: number) => void;
   generateVariants: () => void;
   regenerateSkus: () => void;
   updatePrice: (idx: number, val: number) => void;

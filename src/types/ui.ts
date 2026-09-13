@@ -1,9 +1,18 @@
 import { Media } from './product';
+import { VariantAttributeCombo } from '../utils/generateCombinations';
+
+export interface AttributeValueUI {
+  optionId: number;
+  value: string;
+  displayValue: string;
+}
 
 export interface AttributeGroupUI {
   id: string;
+  attributeId: number | null;
   name: string;
-  values: string[];
+  displayName: string;
+  values: AttributeValueUI[];
 }
 
 export interface VariantRowUI {
@@ -13,7 +22,7 @@ export interface VariantRowUI {
   isSkuEdited?: boolean;
   price: number;
   inventoryQuantity: number;
-  attributes: Record<string, string>;
+  attributes: Record<string, VariantAttributeCombo>;
   image?: File | Media | null;
 }
 
