@@ -2,7 +2,7 @@ import { MappedPayload } from '../utils/payloadMapper';
 import { Product } from '../types/product';
 
 const ADMIN_API_URL = 'http://localhost:8080/api/admin';
-const PUBLIC_API_URL = 'http://localhost:8080/api/products';
+const PUBLIC_API_URL = 'http://localhost:8080/api/v1/products';
 
 export interface GetProductsParams {
   page?: number;
