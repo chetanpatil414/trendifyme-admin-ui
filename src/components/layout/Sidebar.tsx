@@ -22,6 +22,10 @@ const navItems: SidebarItem[] = [
   { id: 'analytics', label: 'Analytics', icon: 'insert_chart', path: '/analytics' },
 ];
 
+const websiteItems: SidebarItem[] = [
+  { id: 'home-page', label: 'Home Page', icon: 'home', path: '/website/home' },
+];
+
 const bottomItems: SidebarItem[] = [
   { id: 'settings', label: 'Settings', icon: 'settings', path: '/settings' },
 ];
@@ -116,15 +120,22 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         </div>
       )}
 
-      {!collapsed && (
-        <p className="px-5 text-[10px] font-bold text-[#697d92]/70 uppercase tracking-widest mb-2 mt-2">
-          Menu
-        </p>
-      )}
-
       {/* Main Nav */}
       <nav className="flex-1 px-3 flex flex-col gap-1 overflow-y-auto">
+        {!collapsed && (
+          <p className="px-2 text-[10px] font-bold text-[#697d92]/70 uppercase tracking-widest mb-1 mt-3">
+            Menu
+          </p>
+        )}
         {navItems.map(item => <SidebarLink key={item.id} {...item} end={item.path === '/'} />)}
+
+        {/* Website Section */}
+        {!collapsed && (
+          <p className="px-2 text-[10px] font-bold text-[#697d92]/70 uppercase tracking-widest mb-1 mt-4">
+            Website
+          </p>
+        )}
+        {websiteItems.map(item => <SidebarLink key={item.id} {...item} />)}
       </nav>
 
       {/* CTA */}
