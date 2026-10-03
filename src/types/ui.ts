@@ -21,6 +21,7 @@ export interface VariantRowUI {
   uniqueId?: string;
   isSkuEdited?: boolean;
   price: number;
+  comparePrice?: number;
   inventoryQuantity: number;
   attributes: Record<string, VariantAttributeCombo>;
   image?: File | Media | null;

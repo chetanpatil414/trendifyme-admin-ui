@@ -41,11 +41,17 @@ export const mapToApiPayload = (
     }
   });
 
+  const productComparePrice = parseFloat(product.comparePrice || '0');
+
   // 2. Map Variants to API format
-  const apiVariants = variants.map(v => ({
+  const apiVariants = variants.map(v => {
+    const comparePrice =
+      v.comparePrice ?? (productComparePrice > 0 ? productComparePrice : undefined);
+
+    return {
     sku: v.sku,
     price: v.price,
-    comparePrice: v.price * 1.2, // Mocking for sample
+    comparePrice: comparePrice && comparePrice > 0 ? comparePrice : undefined,
     stock: v.inventoryQuantity,
     currency: 'INR',
     attributes: Object.values(v.attributes).map(attr => ({
@@ -56,7 +62,8 @@ export const mapToApiPayload = (
       availableStock: v.inventoryQuantity,
       lowStockAlert: 5
     }
-  }));
+  };
+  });
 
   // 3. Assemble the JSON part of the payload
   const request = {
